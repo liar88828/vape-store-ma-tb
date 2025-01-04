@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/app/components/sidebar";
-import BottomNavbar from "./components/BottomNavbar";
+import BottomNavbar from "./components/invoice/BottomNavbar";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,14 +30,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <main className="  min-h-screen grid grid-cols-12">
-          <div className="col-span-2">
+        <main className="  min-h-screen sm:grid grid-cols-12">
+          <div className="sm:col-span-2">
             <Sidebar />
           </div>
           <div className="col-span-10 container p-2">
             {children}
           </div>
           <BottomNavbar />
+          <Toaster />
         </main>
       </body>
     </html>

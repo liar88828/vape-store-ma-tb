@@ -1,14 +1,16 @@
-import { invoiceCreate, invoiceFindAll } from "@/server/invoice"
-import { InvoiceSchema } from "@/validation/invoice"
 import { NextRequest, NextResponse } from "next/server"
+import { productCreate, productFindAll } from "../../../server/product"
+import { ProductSchema } from "../../../validation/product"
 import { getParams } from "../../../utils/getContext"
 
 export async function GET(request: NextRequest) {
-	const search = getParams(request, "search") ?? ""
+	const search = getParams(request, "search")
 	try {
-		const data = await invoiceFindAll(search)
+		const data = await productFindAll(search)
 
-		return NextResponse.json({ data })
+		return NextResponse.json({
+			data: data,
+		})
 	} catch (error) {
 		if (error instanceof Error) {
 			return NextResponse.json({
@@ -22,8 +24,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
 	try {
 		const json = await request.json()
-		const valid = InvoiceSchema.parse(json)
-		const data = await invoiceCreate(valid)
+		const valid = ProductSchema.parse(json)
+		const data = await productCreate(valid)
 
 		return NextResponse.json({
 			data: data,

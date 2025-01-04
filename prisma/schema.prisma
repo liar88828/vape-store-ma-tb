@@ -10,24 +10,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Invoice {
-  id            String        @id @default(cuid())
+model InvoiceDB {
+  id            String             @id @default(cuid())
   customerName  String
   customerEmail String
   date          DateTime
-  invoiceNumber String        @unique
+  invoiceNumber String             @unique
   accountName   String
   accountNumber String
-  items         InvoiceItem[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  items         InvoiceProductDB[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
 }
 
-model InvoiceItem {
-  id        String  @id @default(cuid())
-  desc      String
+model InvoiceProductDB {
+  id        String     @id @default(cuid())
+  name      String
   price     Float
   qty       Int
-  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  invoiceId String
+  invoice   InvoiceDB? @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId String?
+}
+
+model ProductDB {
+  id    String @id @default(cuid())
+  name  String
+  price Float
+  qty   Int
 }
