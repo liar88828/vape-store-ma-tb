@@ -1,18 +1,41 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
 import { InvoiceInterface } from "@/interface/invoice"
-import React, { useRef } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import Form from "next/form"
 import { useReactToPrint } from "react-to-print"
 import { useInvoiceStore } from "../../store/invoice.store"
 import { exportToExcel } from "../../../utils/excel"
-import { Sheet } from "lucide-react"
+import { Plus, Search, Sheet } from "lucide-react"
 import { toRupiah } from "../../../utils/toRupiah"
 import { toDateFull } from "../../../utils/toDate"
+import Link from "next/link"
+import QRCode from "react-qr-code"
+import useDebounce from "../../../hook/useDebounce"
 
 export const InvoiceComponent: React.FC<{ data: InvoiceInterface }> = ({
 	data,
 }) => {
+	const [fullPath, setFullPath] = useState<string>()
+	useEffect(() => {
+		if (window) {
+			const currentURL = new URL(window.location.href)
+			setFullPath(currentURL.href)
+			// console.log(currentURL)
+			// // host (domain)
+			// const host = currentURL.host
+			// console.log("Host:", host)
+
+			// // path (path dari URL)
+			// const path = currentURL.pathname
+			// console.log("Path:", path)
+
+			// // query (parameter dari URL)
+			// const query = currentURL.search
+			// console.log("Query:", query)
+		}
+	}, [])
+
 	const subtotal = data.items.reduce(
 		(sum, item) => sum + item.price * item.qty,
 		0
@@ -23,11 +46,14 @@ export const InvoiceComponent: React.FC<{ data: InvoiceInterface }> = ({
 	return (
 		<div className="max-w-3xl mx-auto p-8 bg-white text-black">
 			<div className="flex justify-between items-start mb-8">
-				<h1 className="text-4xl font-bold">INVOICE</h1>
+				<img src="/image/logo.png" alt="logo" className="size-20" />
+
+				{/* <h1 className="text-4xl font-bold">INVOICE</h1> */}
 				<div className="text-right flex items-center justify-end flex-col">
-					<img src="/image/logo.png" alt="logo" className="size-20" />
+					{/* <img src="/image/logo.png" alt="logo" className="size-20" /> */}
 					{/* <h2 className="text-sm font-bold mb-1">SALFORD & CO.</h2>
                     <p className="text-xs text-gray-600">Fashion Terlengkap</p> */}
+					{fullPath && <QRCode value="hey" className="size-20" />}
 				</div>
 			</div>
 
@@ -45,8 +71,7 @@ export const InvoiceComponent: React.FC<{ data: InvoiceInterface }> = ({
 					</p>
 					<p>
 						NO INVOICE:
-						<br />
-						{data.invoiceNumber}
+						<br />#{data.id}
 					</p>
 				</div>
 			</div>
@@ -129,31 +154,53 @@ export default function InvoicePrint({
 	)
 }
 
-export function SearchInvoice({ invoices }: { invoices: InvoiceInterface[] }) {
-	const { filter, setFilter } = useInvoiceStore()
+export function SearchInvoice({ children }: { children: React.ReactNode }) {
+	const { filter, setFilter, getInvoiceAll, invoiceItems } = useInvoiceStore()
+
+	const debouncedSearchValue = useDebounce(filter.name, 1000)
+
+	const fetchProductItems = useCallback(async () => {
+		if (filter.name === debouncedSearchValue || filter.name === "") {
+			await getInvoiceAll(debouncedSearchValue)
+		}
+	}, [debouncedSearchValue, filter.name, getInvoiceAll])
+
+	useEffect(() => {
+		fetchProductItems()
+	}, [fetchProductItems])
 
 	return (
-		<div className="flex gap-2 items-center">
-			<Form action={"/invoice"} className="join w-full sm:w-fit my-2">
-				<input
-					type="search"
-					name="search"
-					className="input input-bordered join-item w-full"
-					value={filter}
-					onChange={(e) => setFilter(e.target.value)}
-					placeholder="Search..."
-				/>
-				<button type="submit" className="join-item btn btn-neutral">
-					Search
-				</button>
-			</Form>
-
-			<button
-				className="btn btn-success btn-square "
-				onClick={() => exportToExcel(invoices)}
-			>
-				<Sheet />
-			</button>
-		</div>
+		<>
+			<div className="sm:p-6 bg-base-200 rounded-lg shadow-md">
+				{/* <div className="flex justify-between my-2">
+                <h2 className="text-2xl font-bold mb-4">Invoices</h2>
+            </div> */}
+				<div className="flex gap-2 items-center">
+					<Form action={"/invoice"} className="join w-full sm:w-fit my-2">
+						<input
+							type="search"
+							name="search"
+							className="input input-bordered join-item w-full"
+							value={filter.name}
+							onChange={(e) => setFilter(e.target.value)}
+							placeholder="Search..."
+						/>
+						<button type="submit" className="join-item btn btn-neutral">
+							<Search />
+						</button>
+					</Form>
+					<Link className="btn btn-neutral btn-square" href={"/invoice/form"}>
+						<Plus />
+					</Link>
+					<button
+						className="btn btn-success btn-square "
+						onClick={() => exportToExcel(invoiceItems)}
+					>
+						<Sheet />
+					</button>
+				</div>
+				{children}
+			</div>
+		</>
 	)
 }

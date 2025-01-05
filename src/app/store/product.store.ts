@@ -4,6 +4,7 @@ import {
 	productCreate,
 	productDelete,
 	productFindAll,
+	productFindId,
 	productUpdate,
 } from "../../network/product"
 import toast from "react-hot-toast"
@@ -12,15 +13,56 @@ import { toastHandler } from "../../utils/toast"
 interface ProductStore {
 	productItems: ProductInterface[]
 	productItem: ProductInterface
-	getProductItem: (search: string) => Promise<void>
+	productScan: ProductInterface | null
+	getProductScan: (search: string) => Promise<void>
+
+	getProductAll: (search: string) => Promise<void>
+	getProductById: (search: string) => Promise<void>
+
 	setProductItem: (item: ProductInterface) => void
 	setProductItemPartial: (item: Partial<ProductInterface>) => void
 	addProductItem: (item: ProductInterface) => Promise<void>
 	deleteProductItem: (id?: string) => Promise<void>
 	updateProductItem: (item: ProductInterface, id: string) => Promise<void>
+	filter: {
+		name: string
+		id: string
+	}
+	setFilter: (filter: Partial<{ name: string; id: string }>) => void
+	isLoading: boolean
+	setLoading: (isLoading: boolean) => void
+	isCreate: boolean
+	setCreate: (isCreate: boolean) => void
 }
 
 export const useProductStore = create<ProductStore>((set) => ({
+	setCreate: (isLoading) => set({ isLoading }),
+	isCreate: false,
+	setLoading: (isLoading) => set({ isLoading }),
+	isLoading: false,
+	productScan: null,
+	getProductScan: async (search: string) => {
+		set({ isLoading: true })
+
+		try {
+			const data = await productFindId(search)
+			set({ productScan: data.data })
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				// console.log(e.message)
+				set({ productScan: null })
+			}
+		} finally {
+			set({ isLoading: false })
+		}
+	},
+	filter: {
+		id: "",
+		name: "",
+	},
+	setFilter: (filter) => {
+		set((state) => ({ filter: { ...state.filter, ...filter } }))
+	},
 	productItems: [],
 	productItem: {
 		name: "",
@@ -44,10 +86,13 @@ export const useProductStore = create<ProductStore>((set) => ({
 			},
 		})
 	},
-	getProductItem: async (search: string) => {
+	getProductAll: async (search: string) => {
 		const data = await productFindAll(search)
-		// console.log(data)
-		set({ productItems: data.data })
+		set({ productItems: data.data, isLoading: false })
+	},
+	getProductById: async (search: string) => {
+		const data = await productFindId(search)
+		set({ productItem: data.data })
 	},
 	deleteProductItem: async (id?: string) => {
 		if (!id) {

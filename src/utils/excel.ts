@@ -5,9 +5,10 @@ import * as XLSX from "xlsx"
 export const exportToExcel = (invoices: InvoiceInterface[]) => {
 	// Prepare the data for Excel
 	const formattedData = invoices.map((invoice) => ({
-		"Invoice Number": invoice.invoiceNumber,
-		"Customer Name": invoice.customerName,
-		"Customer Email": invoice.customerEmail,
+		id: invoice.id,
+		Customer_Phone: invoice.customerPhone,
+		Customer_Name: invoice.customerName,
+		Customer_Email: invoice.customerEmail,
 		Date: toDate(invoice.date),
 		Total: invoice.items.reduce(
 			(total, item) => total + item.price * item.qty,

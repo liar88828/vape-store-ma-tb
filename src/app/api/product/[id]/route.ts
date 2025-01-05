@@ -11,17 +11,21 @@ export async function GET(_request: NextRequest, context: Context) {
 	try {
 		const id = (await context.params).id
 		const data = await productFindId(id)
-
-		return NextResponse.json({
-			data: data,
-		})
+		if (!data) {
+			throw new Error("Product Is EMpty")
+		}
+		// console.log(data)
+		return NextResponse.json({ data })
 	} catch (error) {
 		if (error instanceof Error) {
-			return NextResponse.json({
-				data: error.message,
-			})
+			return NextResponse.json(
+				{
+					data: error.message,
+				},
+				{ status: 404 }
+			)
 		}
-		return NextResponse.json({ data: "Something Error" })
+		return NextResponse.json({ data: "Something Error" }, { status: 500 })
 	}
 }
 

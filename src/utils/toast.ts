@@ -15,7 +15,7 @@ export const toastHandler = async ({
 		return true
 	} catch (e: unknown) {
 		if (e instanceof Error) {
-			console.log(e.message)
+			// console.log(e.message)
 		}
 		toast.error(`Fail ${title}`)
 		return false

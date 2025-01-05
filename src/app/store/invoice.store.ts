@@ -11,7 +11,9 @@ import {
 import toast from "react-hot-toast"
 
 interface InvoiceStore {
-	filter: string
+	filter: {
+		name: string
+	}
 	setFilter: (filter: string) => void
 	formData: InvoiceInterface
 	setField: (field: keyof InvoiceInterface, value: string | number) => void
@@ -23,27 +25,36 @@ interface InvoiceStore {
 	addItem: (item: ProductInterface) => void
 	removeItem: (index: number) => void
 	calculateTotals: () => { subtotal: number; tax: number; total: number }
-
 	invoiceItems: InvoiceInterface[]
 	productItems: ProductInterface[]
-	getInvoiceItem: (search: string) => Promise<void>
+	getInvoiceAll: (search: string) => Promise<void>
 	addInvoiceItem: (item: InvoiceInterface) => Promise<boolean>
 	deleteInvoiceItem: (id?: string) => Promise<void>
 	updateInvoiceItem: (item: InvoiceInterface, id: string) => Promise<void>
+	tax: number
+	setTax: (tax: number) => void
+	isLoading: boolean
+	setLoading: (loading: boolean) => void
 }
 
 export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
-	filter: "",
+	isLoading: false,
+	setLoading: (isLoading) => set({ isLoading }),
+	setTax: (tax: number) => set({ tax }),
+	tax: 10,
+	filter: {
+		name: "",
+	},
 	invoiceItems: [],
 	productItems: [],
 	setFilter: (filter: string) => {
-		set({ filter })
+		set((state) => ({ filter: { ...state.filter, name: filter } }))
 	},
 	formData: {
 		customerName: "",
 		customerEmail: "",
 		date: new Date().toISOString().split("T")[0],
-		invoiceNumber: "",
+		customerPhone: "",
 		items: [{ name: "", price: 0, qty: 1, id: "" }],
 		accountName: "",
 		accountNumber: "",
@@ -81,24 +92,32 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
 	calculateTotals: () => {
 		const { items } = get().formData
 		const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0)
-		const tax = subtotal * 0.1
+		const tax = (subtotal * get().tax) / 100
 		return { subtotal, tax, total: subtotal + tax }
 	},
 	addInvoiceItem: async (item) => {
+		set({ isLoading: true })
 		return toastHandler({
 			title: "Create Data Invoice",
 			fun: async () => {
 				const data = await invoiceCreate(item)
-				set((state) => ({ invoiceItems: [...state.invoiceItems, data.data] }))
+				set((state) => ({
+					invoiceItems: [...state.invoiceItems, data.data],
+					isLoading: false,
+				}))
 			},
 		})
 	},
-	getInvoiceItem: async (search: string) => {
+	getInvoiceAll: async (search: string) => {
+		set({ isLoading: true })
+
 		const data = await invoiceFindAll(search)
 		// console.log(data)
-		set({ invoiceItems: data.data })
+		set({ invoiceItems: data.data, isLoading: false })
 	},
 	deleteInvoiceItem: async (id?: string) => {
+		set({ isLoading: true })
+
 		if (!id) {
 			toast.error("ID is required")
 			return
@@ -111,12 +130,14 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
 					const newData = state.invoiceItems.filter(
 						(invoice) => invoice.id !== data.data.id
 					)
-					return { invoiceItems: newData }
+					return { invoiceItems: newData, isLoading: true }
 				})
 			},
 		})
 	},
 	updateInvoiceItem: async (item: InvoiceInterface, id: string) => {
+		set({ isLoading: true })
+
 		await toastHandler({
 			title: "Update Data Invoice",
 			fun: async () => {
@@ -128,7 +149,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
 						}
 						return invoice
 					})
-					return { invoiceItems: newData }
+					return { invoiceItems: newData, isLoading: true }
 				})
 			},
 		})

@@ -1,19 +1,14 @@
-"use client"
-
-import { Plus } from "lucide-react"
-import { InvoiceForm } from "./form"
-import React from "react"
+import { ScanBarcode } from "lucide-react"
 import { useProductStore } from "../../store/product.store"
+import ScanForm from "./scanForm"
 
-export function ProductDialogCreate() {
+export function InvoiceProductScanDialogShow() {
 	return (
-		<dialog
-			id="my_product_create"
-			className="modal modal-bottom sm:modal-middle"
-		>
+		<dialog id="my_product_scan" className="modal  modal-middle">
 			<div className="modal-box">
-				<InvoiceForm method="POST" />
+				<ScanForm />
 			</div>
+
 			<form method="dialog" className="modal-backdrop">
 				<button>close</button>
 			</form>
@@ -21,21 +16,22 @@ export function ProductDialogCreate() {
 	)
 }
 
-export default function ProductDialogAction() {
+export function InvoiceProductScanDialogAction() {
 	const { setProductItemPartial } = useProductStore()
 
 	return (
 		<button
+			type="button"
 			onClick={() => {
 				setProductItemPartial({ name: "", price: 0, qty: 0, id: "" })
 				const modal = document.getElementById(
-					"my_product_create"
+					"my_product_scan"
 				) as HTMLDialogElement
 				modal.showModal()
 			}}
-			className="btn-square btn btn-neutral "
+			className="btn-square btn btn-info "
 		>
-			<Plus />
+			<ScanBarcode />
 		</button>
 	)
 }

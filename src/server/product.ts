@@ -12,36 +12,20 @@ export async function productFindAll(search: string) {
 }
 
 export async function productFindId(id: string) {
-	return await prisma.productDB.findUnique({
-		where: { id },
-	})
+	return await prisma.productDB.findUnique({ where: { id } })
 }
 
 export async function productCreate(data: ProductInterface) {
-	return await prisma.productDB.create({
-		data: {
-			name: data.name,
-			price: data.price,
-			qty: data.qty,
-		},
-	})
+	if (!data.id) {
+		delete data.id
+	}
+	return await prisma.productDB.create({ data })
 }
 
 export async function productUpdate(data: ProductInterface, id: string) {
-	return await prisma.productDB.update({
-		where: { id },
-		data: {
-			name: data.name,
-			price: data.price,
-			qty: data.qty,
-		},
-	})
+	return await prisma.productDB.update({ where: { id }, data })
 }
 
 export async function productDelete(id: string) {
-	return await prisma.productDB.delete({
-		where: {
-			id,
-		},
-	})
+	return await prisma.productDB.delete({ where: { id } })
 }

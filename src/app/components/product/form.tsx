@@ -7,15 +7,18 @@ import { z } from "zod"
 export function InvoiceForm({
 	method,
 	id,
+	isScan,
 }: {
 	method: "POST" | "PUT"
 	id?: string
+	isScan?: string
 }) {
 	const {
 		addProductItem,
 		setProductItemPartial,
 		updateProductItem,
 		productItem: formData,
+		setCreate,
 	} = useProductStore()
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,15 +33,21 @@ export function InvoiceForm({
 		try {
 			e.preventDefault()
 			const valid = ProductSchema.parse(formData)
-			if (method === "POST" && !id) {
+			if (method === "POST") {
+				if (id) {
+					valid.id = id
+				}
 				addProductItem(valid)
 			} else if (method === "PUT" && id) {
 				updateProductItem(valid, id)
 			}
+			// console.log(valid, "is valid")
+
 			setProductItemPartial({ name: "", price: 0, qty: 0, id: "" })
+			setCreate(false)
 		} catch (e) {
 			if (e instanceof z.ZodError) {
-				// console.log(e.issues)
+				console.log(e.issues)
 			}
 		}
 	}
@@ -46,7 +55,14 @@ export function InvoiceForm({
 	return (
 		<div>
 			<form onSubmit={handleSubmit}>
-				<h1 className="card-title">Update Product</h1>
+				<h1 className="card-title">
+					{isScan
+						? "Product is Not Found"
+						: method === "POST"
+						? "Create"
+						: "Update"}{" "}
+					Product
+				</h1>
 				<div className="mb-4">
 					<label
 						className="block text-gray-700 text-sm font-bold mb-2"

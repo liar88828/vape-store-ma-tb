@@ -15,7 +15,7 @@ model InvoiceDB {
   customerName  String
   customerEmail String
   date          DateTime
-  invoiceNumber String             @unique
+  customerPhone String
   accountName   String
   accountNumber String
   items         InvoiceProductDB[]

@@ -4,7 +4,7 @@ const sampleInvoiceData: InvoiceInterface = {
 	customerName: "Ketut Susilo",
 	customerEmail: "hello@reallygreatsite.com",
 	date: "2024-01-03",
-	invoiceNumber: "INV/2024/001",
+	customerPhone: "09872323423",
 	items: [
 		{ id: "", name: "KAOS", price: 100000, qty: 1 },
 		{ id: "", name: "JAKET", price: 200000, qty: 1 },

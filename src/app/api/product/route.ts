@@ -26,10 +26,8 @@ export async function POST(request: NextRequest) {
 		const json = await request.json()
 		const valid = ProductSchema.parse(json)
 		const data = await productCreate(valid)
-
-		return NextResponse.json({
-			data: data,
-		})
+		// console.log(data)
+		return NextResponse.json({ data })
 	} catch (error) {
 		if (error instanceof Error) {
 			return NextResponse.json({

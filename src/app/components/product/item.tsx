@@ -1,22 +1,25 @@
 "use client"
 import React, { useCallback, useEffect } from "react"
 import { toRupiah } from "../../../utils/toRupiah"
-import { Pen, Plus, Search, Trash } from "lucide-react"
+import { Search, Trash } from "lucide-react"
 import { useProductStore } from "../../store/product.store"
 import Loading from "../Loading"
 import useDebounce from "../../../hook/useDebounce"
 import type { ProductInterface } from "../../../interface/InvoiceItem"
-import { useInvoiceStore } from "../../store/invoice.store"
+import ProductDialogAction from "./dialogCreate"
+import { InvoiceDialogActionClose } from "../invoice/dialogInvoice"
+import { ProductDialogUpdateAction } from "./dialogUpdate"
 
 export const InvoiceList: React.FC = () => {
-	const { getProductItem, productItems, setProductItemPartial, productItem } =
+	const { getProductAll, productItems, setFilter, filter, productItem } =
 		useProductStore()
 
 	const debouncedSearchValue = useDebounce(productItem.name, 500)
 
 	const fetchProductItems = useCallback(async () => {
-		await getProductItem(debouncedSearchValue)
-	}, [getProductItem, debouncedSearchValue])
+		await getProductAll(debouncedSearchValue)
+		// console.log("is debounce")
+	}, [getProductAll, debouncedSearchValue])
 
 	useEffect(() => {
 		fetchProductItems()
@@ -33,25 +36,14 @@ export const InvoiceList: React.FC = () => {
 							type="search"
 							className="join-item input input-bordered w-full"
 							placeholder="Search..."
-							value={productItem.name}
-							onChange={(e) => setProductItemPartial({ name: e.target.value })}
+							value={filter.name}
+							onChange={(e) => setFilter({ name: e.target.value })}
 						/>
 						<button className="join-item btn btn-neutral">
 							<Search />
 						</button>
 					</div>
-					<button
-						onClick={() => {
-							setProductItemPartial({ name: "", price: 0, qty: 0, id: "" })
-							const modal = document.getElementById(
-								"my_product_create"
-							) as HTMLDialogElement
-							modal.showModal()
-						}}
-						className="btn-square btn btn-neutral "
-					>
-						<Plus />
-					</button>
+					<ProductDialogAction />
 				</div>
 			</div>
 			<div className="grid sm:grid-cols-2 grid-cols-1 gap-2 sm:gap-4">
@@ -74,8 +66,7 @@ export function ProductItem({
 	item: ProductInterface
 	isSelect: boolean
 }) {
-	const { deleteProductItem, setProductItem } = useProductStore()
-	const addItem = useInvoiceStore((state) => state.addItem)
+	const { deleteProductItem } = useProductStore()
 
 	return (
 		<div className="card bg-base-200 card-compact">
@@ -95,38 +86,12 @@ export function ProductItem({
 					</div>
 					<div className="flex gap-2 flex-col">
 						{isSelect ? (
-							<>
-								<div className="">
-									<button
-										type="button"
-										onClick={() => {
-											addItem(item)
-											const modal = document.getElementById(
-												"modal_product"
-											) as HTMLDialogElement
-											modal.close()
-										}}
-										className="btn btn-info btn-square"
-									>
-										<Plus />
-									</button>
-								</div>
-							</>
+							<div className="">
+								<InvoiceDialogActionClose item={item} isKey="modal_product" />
+							</div>
 						) : (
 							<>
-								<button
-									onClick={() => {
-										setProductItem(item)
-
-										const isElement = document.getElementById(
-											"my_product_update"
-										) as HTMLDialogElement
-										isElement.showModal()
-									}}
-									className="btn-sm btn-square btn btn-success"
-								>
-									<Pen />
-								</button>
+								<ProductDialogUpdateAction item={item} />
 
 								<button
 									onClick={() => deleteProductItem(item.id)}

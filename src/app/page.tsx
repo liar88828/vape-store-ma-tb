@@ -1,10 +1,5 @@
-import Link from 'next/link'
-import React from 'react'
+import { redirect } from "next/navigation"
 
 export default function page() {
-  return (
-    <div className="">
-      <Link href={'/invoice'}>Invoice</Link>
-    </div>
-  )
+	redirect("/invoice")
 }

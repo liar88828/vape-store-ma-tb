@@ -26,7 +26,7 @@ export async function invoiceCreate(data: InvoiceSchemaType) {
 				customerName: data.customerName,
 				customerEmail: data.customerEmail,
 				date: new Date(data.date),
-				invoiceNumber: data.invoiceNumber,
+				customerPhone: data.customerPhone,
 				accountName: data.accountName,
 				accountNumber: data.accountNumber,
 				items: {
@@ -69,7 +69,7 @@ export async function invoiceUpdate(data: InvoiceSchemaType, id: string) {
 				customerName: data.customerName,
 				customerEmail: data.customerEmail,
 				date: new Date(data.date),
-				invoiceNumber: data.invoiceNumber,
+				customerPhone: data.customerPhone,
 				accountName: data.accountName,
 				accountNumber: data.accountNumber,
 				items: {
