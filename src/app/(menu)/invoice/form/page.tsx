@@ -1,8 +1,8 @@
 import InvoiceForm from "@/app/components/invoice/form"
 import React, { Suspense } from "react"
-import { PageLoading } from "../../components/Loading"
-import { InvoiceProductSearchDialogShow } from "../../components/invoice/dialogInvoice"
-import { InvoiceProductScanDialogShow } from "../../components/scan/dialogScan"
+import { PageLoading } from "@/app/components/Loading"
+import { InvoiceProductSearchDialogShow } from "@/app/components/invoice/dialogInvoice"
+import { InvoiceProductScanDialogShow } from "@/app/components/scan/dialogScan"
 
 export default function page() {
 	return (

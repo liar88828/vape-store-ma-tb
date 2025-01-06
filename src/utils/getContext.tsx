@@ -10,3 +10,24 @@ export async function getContext(
 export function getParams(request: NextRequest, name: string) {
 	return request.nextUrl.searchParams.get(name) ?? ""
 }
+
+export function getParamsDate(
+	request: NextRequest,
+	paramName: string
+): Date | undefined {
+	const paramValue = getParams(request, paramName) ?? ""
+
+	if (!paramValue) {
+		return undefined // Return null if the parameter is not provided
+	}
+
+	const parsedDate = new Date(paramValue)
+
+	if (isNaN(parsedDate.getTime())) {
+		throw new Error(
+			`Invalid date format for parameter "${paramName}": ${paramValue}`
+		)
+	}
+
+	return parsedDate
+}

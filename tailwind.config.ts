@@ -10,6 +10,10 @@ export default {
 	daisyui: {
 		themes: ["light", "dark"],
 	},
-	theme: {},
+	theme: {
+		container: {
+			center: true,
+		},
+	},
 	plugins: [require("daisyui")],
 } satisfies Config

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import { productCreate, productFindAll } from "../../../server/product"
-import { ProductSchema } from "../../../validation/product"
-import { getParams } from "../../../utils/getContext"
+import { productCreate, productFindAll } from "@/server/product"
+import { ProductSchema } from "@/validation/product"
+import { getParams } from "@/utils/getContext"
 
 export async function GET(request: NextRequest) {
 	const search = getParams(request, "search")

@@ -38,3 +38,9 @@ model ProductDB {
   price Float
   qty   Int
 }
+
+model UserDB {
+  id       String @id @default(cuid())
+  email    String
+  password String
+}

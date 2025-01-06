@@ -13,8 +13,10 @@ import toast from "react-hot-toast"
 interface InvoiceStore {
 	filter: {
 		name: string
+		dateStart: string
+		dateEnd: string
 	}
-	setFilter: (filter: string) => void
+	setFilter: (filter: Partial<InvoiceStore["filter"]>) => void
 	formData: InvoiceInterface
 	setField: (field: keyof InvoiceInterface, value: string | number) => void
 	handleItemChange: (
@@ -27,7 +29,7 @@ interface InvoiceStore {
 	calculateTotals: () => { subtotal: number; tax: number; total: number }
 	invoiceItems: InvoiceInterface[]
 	productItems: ProductInterface[]
-	getInvoiceAll: (search: string) => Promise<void>
+	getInvoiceAll: (filter: Partial<InvoiceStore["filter"]>) => Promise<void>
 	addInvoiceItem: (item: InvoiceInterface) => Promise<boolean>
 	deleteInvoiceItem: (id?: string) => Promise<void>
 	updateInvoiceItem: (item: InvoiceInterface, id: string) => Promise<void>
@@ -44,11 +46,13 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
 	tax: 10,
 	filter: {
 		name: "",
+		dateEnd: new Date().toISOString().split("T")[0],
+		dateStart: new Date().toISOString().split("T")[0],
 	},
 	invoiceItems: [],
 	productItems: [],
-	setFilter: (filter: string) => {
-		set((state) => ({ filter: { ...state.filter, name: filter } }))
+	setFilter: (filter) => {
+		set((state) => ({ filter: { ...state.filter, ...filter } }))
 	},
 	formData: {
 		customerName: "",
@@ -108,7 +112,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
 			},
 		})
 	},
-	getInvoiceAll: async (search: string) => {
+	getInvoiceAll: async (search) => {
 		set({ isLoading: true })
 
 		const data = await invoiceFindAll(search)

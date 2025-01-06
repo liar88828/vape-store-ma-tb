@@ -1,13 +1,19 @@
 import { invoiceCreate, invoiceFindAll } from "@/server/invoice"
 import { InvoiceSchema } from "@/validation/invoice"
 import { NextRequest, NextResponse } from "next/server"
-import { getParams } from "../../../utils/getContext"
+import { getParams, getParamsDate } from "@/utils/getContext"
 import { z } from "zod"
 
 export async function GET(request: NextRequest) {
-	const search = getParams(request, "search") ?? ""
+	const name = getParams(request, "name") ?? ""
+	const dateStart = getParamsDate(request, "dateStart")
+	const dateEnd = getParamsDate(request, "dateEnd")
 	try {
-		const data = await invoiceFindAll(search)
+		const data = await invoiceFindAll({
+			name,
+			dateEnd, // is Date
+			dateStart, // is Date
+		})
 
 		return NextResponse.json({ data })
 	} catch (error) {

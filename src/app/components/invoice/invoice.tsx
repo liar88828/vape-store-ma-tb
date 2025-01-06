@@ -4,11 +4,11 @@ import { InvoiceInterface } from "@/interface/invoice"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import Form from "next/form"
 import { useReactToPrint } from "react-to-print"
-import { useInvoiceStore } from "../../store/invoice.store"
-import { exportToExcel } from "../../../utils/excel"
-import { Plus, Search, Sheet } from "lucide-react"
-import { toRupiah } from "../../../utils/toRupiah"
-import { toDateFull } from "../../../utils/toDate"
+import { useInvoiceStore } from "@/app/store/invoice.store"
+import { exportToExcel } from "@/utils/excel"
+import { Filter, Plus, Search, Sheet } from "lucide-react"
+import { toRupiah } from "@/utils/toRupiah"
+import { toDateFull } from "@/utils/toDate"
 import Link from "next/link"
 import QRCode from "react-qr-code"
 import useDebounce from "../../../hook/useDebounce"
@@ -157,13 +157,29 @@ export default function InvoicePrint({
 export function SearchInvoice({ children }: { children: React.ReactNode }) {
 	const { filter, setFilter, getInvoiceAll, invoiceItems } = useInvoiceStore()
 
-	const debouncedSearchValue = useDebounce(filter.name, 1000)
+	const debouncedSearchName = useDebounce(filter.name, 1000)
+	const debouncedSearchDateStart = useDebounce(filter.dateStart, 3000)
+	const debouncedSearchDateEnd = useDebounce(filter.dateEnd, 3000)
 
 	const fetchProductItems = useCallback(async () => {
-		if (filter.name === debouncedSearchValue || filter.name === "") {
-			await getInvoiceAll(debouncedSearchValue)
+		if (
+			filter.dateEnd === debouncedSearchDateEnd &&
+			filter.dateStart === debouncedSearchDateStart &&
+			filter.name === debouncedSearchName
+		) {
+			await getInvoiceAll({
+				dateEnd: debouncedSearchDateEnd,
+				dateStart: debouncedSearchDateStart,
+				name: debouncedSearchName,
+			})
 		}
-	}, [debouncedSearchValue, filter.name, getInvoiceAll])
+	}, [
+		filter,
+		debouncedSearchName,
+		debouncedSearchDateEnd,
+		debouncedSearchDateStart,
+		getInvoiceAll,
+	])
 
 	useEffect(() => {
 		fetchProductItems()
@@ -182,7 +198,7 @@ export function SearchInvoice({ children }: { children: React.ReactNode }) {
 							name="search"
 							className="input input-bordered join-item w-full"
 							value={filter.name}
-							onChange={(e) => setFilter(e.target.value)}
+							onChange={(e) => setFilter({ name: e.target.value })}
 							placeholder="Search..."
 						/>
 						<button type="submit" className="join-item btn btn-neutral">
@@ -192,6 +208,8 @@ export function SearchInvoice({ children }: { children: React.ReactNode }) {
 					<Link className="btn btn-neutral btn-square" href={"/invoice/form"}>
 						<Plus />
 					</Link>
+
+					<FilterInvoiceDialogAction />
 					<button
 						className="btn btn-success btn-square "
 						onClick={() => exportToExcel(invoiceItems)}
@@ -201,6 +219,68 @@ export function SearchInvoice({ children }: { children: React.ReactNode }) {
 				</div>
 				{children}
 			</div>
+			<FilterInvoiceDialogShow />
 		</>
+	)
+}
+
+export function FilterInvoiceDialogShow() {
+	const { filter, setFilter } = useInvoiceStore()
+
+	return (
+		<dialog id="filter_invoice_modal" className="modal">
+			<div className="modal-box w-11/12 max-w-5xl">
+				<h3 className="font-bold text-lg">Filter Date</h3>
+				<div className="space-y-2">
+					<div className="form-control">
+						<span>Start</span>
+						<input
+							type="datetime-local"
+							className="input input-bordered  "
+							value={filter.dateStart}
+							onChange={(e) => setFilter({ dateStart: e.target.value })}
+						/>
+						{/* <button className="btn btn-outline join-item" type="button">
+							<ArrowBigUp />
+						</button> */}
+					</div>
+
+					<div className=" form-control">
+						<span>End</span>
+						<input
+							type="datetime-local"
+							className="input input-bordered  "
+							value={filter.dateEnd}
+							onChange={(e) => setFilter({ dateEnd: e.target.value })}
+						/>
+						{/* <button className="btn btn-outline join-item" type="button">
+							<ArrowBigDown />
+						</button> */}
+					</div>
+				</div>
+				<div className="modal-action">
+					<form method="dialog">
+						{/* if there is a button, it will close the modal */}
+						<button className="btn">Close</button>
+					</form>
+				</div>
+			</div>
+		</dialog>
+	)
+}
+
+export function FilterInvoiceDialogAction() {
+	return (
+		<button
+			className="btn btn-neutral btn-square"
+			onClick={() => {
+				const modal = document.getElementById(
+					"filter_invoice_modal"
+				) as HTMLDialogElement
+				modal.showModal()
+			}}
+		>
+			<Filter />
+		</button>
 	)
 }

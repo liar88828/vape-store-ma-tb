@@ -1,7 +1,7 @@
 "use client"
 
 import { Pen } from "lucide-react"
-import type { ProductInterface } from "../../../interface/InvoiceItem"
+import type { ProductInterface } from "@/interface/InvoiceItem"
 import { useProductStore } from "../../store/product.store"
 import { InvoiceForm } from "./form"
 

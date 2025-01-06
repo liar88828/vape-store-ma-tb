@@ -1,18 +1,12 @@
 "use client"
-import {
-	boundingBox,
-	centerText,
-	outline,
-	Scanner,
-	useDevices,
-	type IDetectedBarcode,
-} from "@yudiel/react-qr-scanner"
+import { boundingBox, centerText, type IDetectedBarcode, outline, Scanner, useDevices, } from "@yudiel/react-qr-scanner"
 import { useState } from "react"
 import { useProductStore } from "../../store/product.store"
 import { ProductItem } from "../product/item"
 import { InvoiceForm } from "../product/form"
 import { Power, PowerOff } from "lucide-react"
 import Loading from "../Loading"
+
 export default function ScanPage() {
 	const styles = {
 		container: {

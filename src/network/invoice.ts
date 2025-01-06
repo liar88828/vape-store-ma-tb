@@ -1,8 +1,14 @@
 import { InvoiceInterface } from "@/interface/invoice"
 
-export const invoiceFindAll = async (search: string) => {
+export const invoiceFindAll = async (
+	search: Partial<{
+		name: string
+		dateStart: string
+		dateEnd: string
+	}>
+) => {
 	const response = await fetch(
-		`${process.env.NEXT_PUBLIC_URL_API}/api/invoice?search=${search}`,
+		`${process.env.NEXT_PUBLIC_URL_API}/api/invoice?name=${search.name}&dateStart=${search.dateStart}&dateEnd=${search.dateEnd}`,
 		{
 			method: "GET",
 			headers: {

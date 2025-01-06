@@ -1,12 +1,12 @@
 "use client"
 import { Check, Plus } from "lucide-react"
 import React, { useCallback, useEffect } from "react"
-import { useProductStore } from "../../store/product.store"
-import { ProductItem } from "../product/item"
-import { PageLoading } from "../Loading"
-import useDebounce from "../../../hook/useDebounce"
-import { useInvoiceStore } from "../../store/invoice.store"
-import type { ProductInterface } from "../../../interface/InvoiceItem"
+import { useProductStore } from "@/app/store/product.store"
+import { ProductItem } from "@/app/components/product/item"
+import { PageLoading } from "@/app/components/Loading"
+import { useInvoiceStore } from "@/app/store/invoice.store"
+import type { ProductInterface } from "@/interface/InvoiceItem"
+import useDebounce from "@/hook/useDebounce";
 
 export function InvoiceProductSearchDialogShow() {
 	const {

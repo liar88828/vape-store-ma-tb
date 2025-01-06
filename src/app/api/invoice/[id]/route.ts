@@ -8,9 +8,7 @@ export async function GET(_request: NextRequest, context: Context) {
 		const id = (await context.params).id
 		const data = await invoiceFindId(id)
 
-		return NextResponse.json({
-			data: data,
-		})
+		return NextResponse.json({ data })
 	} catch (error) {
 		if (error instanceof Error) {
 			return NextResponse.json({
@@ -29,9 +27,7 @@ export async function PUT(request: NextRequest, context: Context) {
 		const valid = InvoiceSchema.parse(json)
 		const data = await invoiceUpdate(valid, id)
 
-		return NextResponse.json({
-			data: data,
-		})
+		return NextResponse.json({ data })
 	} catch (error) {
 		if (error instanceof Error) {
 			return NextResponse.json({
@@ -46,10 +42,7 @@ export async function DELETE(_request: NextRequest, context: Context) {
 	try {
 		const id = (await context.params).id
 		const data = await invoiceDelete(id)
-
-		return NextResponse.json({
-			data: data,
-		})
+		return NextResponse.json({ data })
 	} catch (error) {
 		if (error instanceof Error) {
 			return NextResponse.json({

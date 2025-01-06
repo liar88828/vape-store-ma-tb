@@ -1,9 +1,10 @@
 "use client"
-import { InvoiceList } from "../components/product/item"
+
 import { Suspense } from "react"
-import { PageLoading } from "../components/Loading"
-import { ProductDialogUpdate } from "../components/product/dialogUpdate"
-import { ProductDialogCreate } from "../components/product/dialogCreate"
+import { PageLoading } from "@/app/components/Loading"
+import { InvoiceList } from "@/app/components/product/item"
+import { ProductDialogCreate } from "@/app/components/product/dialogCreate"
+import { ProductDialogUpdate } from "@/app/components/product/dialogUpdate"
 
 export default function page() {
 	return (

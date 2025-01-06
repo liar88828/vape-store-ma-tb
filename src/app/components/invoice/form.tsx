@@ -1,10 +1,10 @@
 "use client"
 import { Minus } from "lucide-react"
-import { useInvoiceStore } from "../../store/invoice.store"
+import { useInvoiceStore } from "@/app/store/invoice.store"
 import { useRouter } from "next/navigation"
-import { toRupiah } from "../../../utils/toRupiah"
-import { InvoiceProductSearchDialogAction } from "./dialogInvoice"
-import { InvoiceProductScanDialogAction } from "../scan/dialogScan"
+import { toRupiah } from "@/utils/toRupiah"
+import { InvoiceProductSearchDialogAction } from "@/app/components/invoice/dialogInvoice"
+import { InvoiceProductScanDialogAction } from "@/app/components/scan/dialogScan"
 
 const InvoiceForm: React.FC = () => {
 	const {

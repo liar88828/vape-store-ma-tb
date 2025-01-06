@@ -1,11 +1,7 @@
 import { Context } from "@/interface/params"
 import { NextRequest, NextResponse } from "next/server"
-import { ProductSchema } from "../../../../validation/product"
-import {
-	productDelete,
-	productFindId,
-	productUpdate,
-} from "../../../../server/product"
+import { ProductSchema } from "@/validation/product"
+import { productDelete, productFindId, productUpdate, } from "@/server/product"
 
 export async function GET(_request: NextRequest, context: Context) {
 	try {

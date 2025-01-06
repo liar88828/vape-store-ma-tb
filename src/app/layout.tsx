@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
-import { BottomNavbar, Sidebar } from "@/app/components/sidebar"
-import { Toaster } from "react-hot-toast"
+import SessionProviderLayout from "./components/layout/SessionProviderLayout"
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -27,16 +26,9 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+				className={`${geistSans.variable} ${geistMono.variable} antialiased `}
 			>
-				<main className="  min-h-screen sm:grid grid-cols-12">
-					<div className="sm:col-span-2">
-						<Sidebar />
-					</div>
-					<div className="col-span-10 container p-2">{children}</div>
-					<BottomNavbar />
-					<Toaster />
-				</main>
+				<SessionProviderLayout>{children}</SessionProviderLayout>
 			</body>
 		</html>
 	)

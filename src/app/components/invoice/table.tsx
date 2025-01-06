@@ -1,5 +1,5 @@
 "use client"
-import { toDate } from "../../../utils/toDate"
+import { toDate } from "@/utils/toDate"
 import { ReceiptText } from "lucide-react"
 import React from "react"
 import Link from "next/link"
@@ -27,6 +27,7 @@ const InvoiceTable: React.FC = ({}) => {
 						<th className=" px-4 py-2 text-right">Price</th>
 						<th className=" px-4 py-2 text-right">Quantity</th>
 						<th className=" px-4 py-2 text-right">Total</th>
+						<th className=" px-4 py-2 text-right">Create Date</th>
 						<th className=" px-4 py-2 text-right">Action</th>
 					</tr>
 				</thead>
@@ -58,6 +59,7 @@ const InvoiceTable: React.FC = ({}) => {
 									0
 								)}
 							</td>
+							<td className=" px-4 py-2 text-right">{toDate(invoice.date)}</td>
 							<td className=" px-4 py-2 text-right">
 								<Link
 									href={`/invoice/${invoice.id}`}

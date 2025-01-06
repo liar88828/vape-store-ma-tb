@@ -1,14 +1,23 @@
 import { prisma } from "@/config/prisma"
 import type { InvoiceSchemaType } from "../validation/invoice"
 
-export async function invoiceFindAll(search: string) {
+export async function invoiceFindAll(filter: {
+	dateStart?: Date
+	dateEnd?: Date
+	name: string
+}) {
 	return await prisma.invoiceDB.findMany({
 		where: {
 			customerName: {
-				contains: search,
+				contains: filter.name,
+			},
+			date: {
+				...(filter.dateStart && { gte: filter.dateStart }),
+				...(filter.dateEnd && { lte: filter.dateEnd }),
 			},
 		},
 		include: { items: true },
+		take: filter.dateStart || filter.dateEnd || filter.name ? undefined : 1000,
 	})
 }
 
