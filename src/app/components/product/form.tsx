@@ -1,7 +1,8 @@
 "use client"
 
-import { useProductStore } from "../../store/product.store"
-import { ProductSchema } from "../../../validation/product"
+import React from "react";
+import { ProductSchema } from "@/validation/product"
+import { useProductStore } from "@/app/store/product.store";
 import { z } from "zod"
 
 export function InvoiceForm({
@@ -37,15 +38,16 @@ export function InvoiceForm({
 				if (id) {
 					valid.id = id
 				}
-				addProductItem(valid)
+                await addProductItem(valid)
 			} else if (method === "PUT" && id) {
-				updateProductItem(valid, id)
+                await updateProductItem(valid, id)
 			}
 			// console.log(valid, "is valid")
 
 			setProductItemPartial({ name: "", price: 0, qty: 0, id: "" })
 			setCreate(false)
-		} catch (e) {
+
+        } catch (e) {
 			if (e instanceof z.ZodError) {
 				console.log(e.issues)
 			}

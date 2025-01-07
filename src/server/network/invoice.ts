@@ -7,12 +7,15 @@ export const invoiceFindAll = async (
 		dateEnd: string
 	}>
 ) => {
+    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImlkIjoiY201bWViY3YzMDAwMHR5MzhkNnl4cXRiZyIsImVtYWlsIjoidXNlcjFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIn0sImlhdCI6MTczNjI2MDE3NCwiZXhwIjoxNzM2ODY0OTc0fQ.dpa0vddqoILy-mpqy3yjtLF_0AGfN31gJVeei4KpU2I'
+
 	const response = await fetch(
 		`${process.env.NEXT_PUBLIC_URL_API}/api/invoice?name=${search.name}&dateStart=${search.dateStart}&dateEnd=${search.dateEnd}`,
 		{
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
+                "Authorization": `Bearer ${ token }`
 			},
 		}
 	)

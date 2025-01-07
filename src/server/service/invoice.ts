@@ -1,5 +1,5 @@
 import { prisma } from "@/config/prisma"
-import type { InvoiceSchemaType } from "../validation/invoice"
+import type { InvoiceSchemaType } from "@/validation/invoice"
 
 export async function invoiceFindAll(filter: {
 	dateStart?: Date

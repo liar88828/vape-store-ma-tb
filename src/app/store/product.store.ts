@@ -1,12 +1,6 @@
 import { create } from "zustand"
 import type { ProductInterface } from "@/interface/InvoiceItem"
-import {
-	productCreate,
-	productDelete,
-	productFindAll,
-	productFindId,
-	productUpdate,
-} from "../../network/product"
+import { productCreate, productDelete, productFindAll, productFindId, productUpdate, } from "@/server/network/product"
 import toast from "react-hot-toast"
 import { toastHandler } from "../../utils/toast"
 

@@ -1,61 +1,137 @@
-import { AuthError, CredentialsSignin, type NextAuthConfig } from "next-auth"
-import Credentials from "next-auth/providers/credentials"
-import { getUserFromDb, signInSchema } from "@/utils/secure"
-import { z } from "zod"
+import { z } from "zod";
+import { AuthError, CredentialsSignin, NextAuthConfig } from "next-auth";
+import Credentials from "@auth/core/providers/credentials";
+import { getUserFromDb } from "@/utils/secure";
+import { ResponseLogin } from "@/interface/responseLogin";
+import { RequestRevalidate } from "@/app/api/revalidate/route";
+
+import { signInSchema } from "@/validation/auth";
 
 export default {
 	// pages: {
 	// 	signIn: "/login",
 	// },
-	callbacks: {
-        signIn({}) {
-			// console.log({ user, account, profile, email, credentials })
-			// email = credentials.email
-			return true
-		},
-		jwt({ token, trigger, session }) {
-			// console.log(session)
-			if (trigger === "update") token.name = session.user.name
-			// console.log(token)
-			return token
-		},
-		async session({ session, token }) {
-			if (token?.accessToken) session.accessToken = token.accessToken
+
+    callbacks: {
+
+        // async authorized(req: NextRequest, res: Response) {
+        //     return true
+        // },
+        async jwt({ token, trigger, session, user, account }) {
+            // console.log(user)
+            // console.log(account,'account');
+            if (account) {
+
+                // First-time login, save the `access_token`, its expiry and the `refresh_token`
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                token.idUser = user.id
+                token.access_token = user.accessToken
+                token.expires_at = new Date(user.expire_date).getTime()
+                token.role = user.role
+                // token.refresh_token = account.refresh_token
+                // console.log(token)
+                return token
+            } else if (Date.now() < token.expires_at * 1000) {
+                // Subsequent logins, but the `access_token` is still valid
+                return token
+            } else {
+                try {
+
+                    if (!token.access_token) {
+                        throw new TypeError('Missing access_token')
+                    }
+                    const send: RequestRevalidate = {
+                        tokenAccess: token.access_token,
+                    }
+                    const res = await fetch(`${ process.env.NEXT_PUBLIC_URL_API }/api/revalidate`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(send),
+                        });
+                    if (!res.ok) {
+                        console.log('action api login ')
+                        console.log(await res.text())
+                    }
+
+                    const data: ResponseLogin = await res.json()
+                    if (user) {
+                        token.idUser = data.id
+                        token.access_token = data.accessToken
+                        token.expires_at = new Date(data.expire_date).getTime()
+                        token.role = user.role
+                    }
+                    if (trigger === "update") {
+                        token.name = session.user.name
+                    }
+                    // console.log(token,'jwt callback')
+                    return token
+                } catch (e) {
+                    console.error(e)
+                    token.error = "RefreshTokenError"
+                    return token
+                }
+            }
+        },
+        async session({ session, token, }) {
+            // console.log(session, 'session session callback')
+            // console.log(token,'session token callback')
+            // const isValidToken = getIsTokenValid(token)
+            // if (!isValidToken) return { user: null }
+
+            if (token) {
+                session.accessToken = token.access_token
+                session.user.role = token.role
+                session.user.id = token.idUser
+            }
 			// console.log(session, "token--")
+            session.error = token.error
 			return session
 		},
 	},
 	providers: [
 		Credentials({
-			// You can specify which fields should be submitted, by adding keys to the `credentials` object.
+            // You can specify which fields should be submitted, by adding keys to the `credentials` object.
 			// e.g. domain, username, password, 2FA token, etc.
 			credentials: {
 				email: {},
 				password: {},
 			},
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
+
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
 			authorize: async (credentials) => {
 				try {
-					let user = null
+                    // console.log(credentials)
 
-					const { email, password } = await signInSchema.parseAsync(credentials)
+                    if (!credentials) {
+                        throw new Error('Error creating login')
+                    } else {
 
-					// logic to verify if the user exists
-					user = await getUserFromDb(email, password)
+                        const valid = await signInSchema.parseAsync(credentials)
+                        // logic to verify if the user exists
+                        await getUserFromDb(valid)
+                        // return user object with their profile data
+                        // console.log(valid,'valid auth')
+                        // console.log(user,'user auth')
+                        // console.log(credentials,'credentials auth')
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        const { password, ...rest } = credentials
+                        return rest
+                    }
 
-					// return user object with their profile data
-					return user
-				} catch (error) {
+                } catch (error: unknown) {
 					if (error instanceof z.ZodError) {
-						return error.flatten().fieldErrors
+                        throw error.flatten().fieldErrors
 					}
 
 					if (error instanceof AuthError) {
-						console.log("is error ")
 						switch (error.type) {
 							case "CredentialsSignin":
-								return { msg: error.message, status: "error" }
+                                throw { msg: error.message, status: "error" }
 
                             default:
 								throw { msg: error.message, status: "error" }
@@ -64,8 +140,8 @@ export default {
 
 					throw null
 				}
-			},
-		}),
+            }
+        }),
 	],
 } satisfies NextAuthConfig
 
@@ -87,3 +163,4 @@ export class CustomError extends CredentialsSignin {
 		this.stack = undefined
 	}
 }
+

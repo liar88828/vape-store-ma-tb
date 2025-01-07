@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
-import { productCreate, productFindAll } from "@/server/product"
+import { productCreate, productFindAll } from "@/server/service/product"
 import { ProductSchema } from "@/validation/product"
 import { getParams } from "@/utils/getContext"
+import { protectApi } from "@/utils/secure";
 
 export async function GET(request: NextRequest) {
-	const search = getParams(request, "search")
-	try {
+    try {
+        await protectApi(request)
+        const search = getParams(request, "search")
 		const data = await productFindAll(search)
 
 		return NextResponse.json({
@@ -23,6 +25,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	try {
+        await protectApi(request)
 		const json = await request.json()
 		const valid = ProductSchema.parse(json)
 		const data = await productCreate(valid)

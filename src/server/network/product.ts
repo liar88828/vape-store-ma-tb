@@ -1,4 +1,4 @@
-import type { ProductInterface } from "../interface/InvoiceItem"
+import type { ProductInterface } from "@/interface/InvoiceItem"
 
 export const productFindAll = async (search: string) => {
 	const response = await fetch(

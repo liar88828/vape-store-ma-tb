@@ -11,6 +11,8 @@ const { auth } = NextAuth(authConfig)
 export default auth(async function middleware(req: NextRequest) {
     // console.log(req.url.includes("/login"), "----------")
     // console.log(req.url)
+    // -------
+
     if (!req.url.includes("/login")) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
@@ -25,6 +27,7 @@ export default auth(async function middleware(req: NextRequest) {
         }
     }
 
+    // --------
 	// Your custom middleware logic goes here
 	// console.log(req.auth, "middleware - auth")
     NextResponse.next()

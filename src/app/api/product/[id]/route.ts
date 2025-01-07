@@ -1,10 +1,14 @@
 import { Context } from "@/interface/params"
 import { NextRequest, NextResponse } from "next/server"
 import { ProductSchema } from "@/validation/product"
-import { productDelete, productFindId, productUpdate, } from "@/server/product"
+import { productDelete, productFindId, productUpdate, } from "@/server/service/product"
+import { protectApi } from "@/utils/secure";
 
-export async function GET(_request: NextRequest, context: Context) {
+export async function GET(request: NextRequest, context: Context) {
+
 	try {
+        await protectApi(request)
+
 		const id = (await context.params).id
 		const data = await productFindId(id)
 		if (!data) {
@@ -27,6 +31,7 @@ export async function GET(_request: NextRequest, context: Context) {
 
 export async function PUT(request: NextRequest, context: Context) {
 	try {
+        await protectApi(request)
 		const id = (await context.params).id
 
 		const json = await request.json()
@@ -46,8 +51,9 @@ export async function PUT(request: NextRequest, context: Context) {
 	}
 }
 
-export async function DELETE(_request: NextRequest, context: Context) {
+export async function DELETE(request: NextRequest, context: Context) {
 	try {
+        await protectApi(request)
 		const id = (await context.params).id
 		const data = await productDelete(id)
 

@@ -1,7 +1,5 @@
-import { invoiceFindId } from "@/network/invoice"
-import InvoicePrint, {
-	InvoiceComponent,
-} from "@/app/components/invoice/invoice"
+import { invoiceFindId } from "@/server/network/invoice"
+import InvoicePrint, { InvoiceComponent, } from "@/app/components/invoice/invoice"
 import { Context } from "@/interface/params"
 import React from "react"
 

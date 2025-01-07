@@ -1,5 +1,5 @@
 import { prisma } from "@/config/prisma"
-import type { ProductInterface } from "../interface/InvoiceItem"
+import type { ProductInterface } from "../../interface/InvoiceItem"
 
 export async function productFindAll(search: string) {
 	return await prisma.productDB.findMany({

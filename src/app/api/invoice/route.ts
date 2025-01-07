@@ -1,14 +1,16 @@
-import { invoiceCreate, invoiceFindAll } from "@/server/invoice"
+import { invoiceCreate, invoiceFindAll } from "@/server/service/invoice"
 import { InvoiceSchema } from "@/validation/invoice"
 import { NextRequest, NextResponse } from "next/server"
 import { getParams, getParamsDate } from "@/utils/getContext"
 import { z } from "zod"
+import { protectApi } from "@/utils/secure";
 
 export async function GET(request: NextRequest) {
-	const name = getParams(request, "name") ?? ""
-	const dateStart = getParamsDate(request, "dateStart")
-	const dateEnd = getParamsDate(request, "dateEnd")
-	try {
+    try {
+        await protectApi(request)
+        const name = getParams(request, "name") ?? ""
+        const dateStart = getParamsDate(request, "dateStart")
+        const dateEnd = getParamsDate(request, "dateEnd")
 		const data = await invoiceFindAll({
 			name,
 			dateEnd, // is Date
@@ -28,6 +30,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	try {
+        await protectApi(request)
 		const json = await request.json()
 		const valid = InvoiceSchema.parse(json)
 		// console.log(valid)

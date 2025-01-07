@@ -1,10 +1,10 @@
 "use client"
-import { useActionState } from "react"
-import { signInAction } from "../../(auth)/action"
+import React, { useActionState } from "react"
+import { MessageErrorForm } from "@/app/components/element/MessageErrorForm";
+import { signInAction } from "@/server/action/auth.action";
 
 export function SignIn() {
 	const [state, action, isPending] = useActionState(signInAction, undefined)
-	console.log(state)
 	return (
 		<div className="w-96">
 			{/* <AuthButton /> */}
@@ -16,7 +16,10 @@ export function SignIn() {
 					)}
 					<label className="form-control">
 						Email
-						<input name="email" type="email" className="input input-bordered" />
+                        <input name="email" type="email"
+                               defaultValue={ state?.prev.email ?? '' }
+                               className="input input-bordered"/>
+                        <MessageErrorForm errors={ state?.error?.email }/>
 					</label>
 					<label className="form-control">
 						Password
@@ -25,6 +28,8 @@ export function SignIn() {
 							type="password"
 							className="input input-bordered"
 						/>
+                        <MessageErrorForm errors={ state?.error?.password }/>
+
 					</label>
 					<div className="card-actions mt-5">
 						<button disabled={isPending} className="btn w-full btn-neutral">
@@ -36,3 +41,4 @@ export function SignIn() {
 		</div>
 	)
 }
+

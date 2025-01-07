@@ -1,0 +1,6 @@
+GET http://localhost:3000/api/invoice
+Content-Type:application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImlkIjoiY201bWViY3YzMDAwMHR5MzhkNnl4cXRiZyIsImVtYWlsIjoidXNlcjFAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIn0sImlhdCI6MTczNjI2MDE3NCwiZXhwIjoxNzM2ODY0OTc0fQ.dpa0vddqoILy-mpqy3yjtLF_0AGfN31gJVeei4KpU2I
+
+{
+}
