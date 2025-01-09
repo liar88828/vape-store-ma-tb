@@ -1,9 +1,9 @@
 import { prisma } from "@/config/prisma"
 import { compare, hash } from "bcrypt-ts"
-import { InvalidCredentials } from "../../auth.config"
 import { NextRequest } from "next/server";
 import { decrypt } from "@/utils/jwt";
-import { auth } from "@/auth";
+import { auth } from "../auth";
+import { InvalidCredentials } from "@/utils/Error";
 
 export const saltAndHashPassword = async (password: string | unknown) => {
 	if (typeof password !== "string") {

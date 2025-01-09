@@ -1,13 +1,12 @@
 import { z } from "zod";
-import { AuthError, CredentialsSignin, NextAuthConfig } from "next-auth";
+import { AuthError, NextAuthConfig } from "next-auth";
 import Credentials from "@auth/core/providers/credentials";
-import { getUserFromDb } from "@/utils/secure";
-import { ResponseLogin } from "@/interface/responseLogin";
-import { RequestRevalidate } from "@/app/api/revalidate/route";
+import { getUserFromDb } from "./src/utils/secure";
+import { ResponseLogin } from "./src/interface/responseLogin";
+import { RequestRevalidate } from "./src/app/api/revalidate/route";
+import { signInSchema } from "./src/validation/auth";
 
-import { signInSchema } from "@/validation/auth";
-
-export default {
+export const authConfig: NextAuthConfig = {
 	// pages: {
 	// 	signIn: "/login",
 	// },
@@ -143,24 +142,5 @@ export default {
             }
         }),
 	],
-} satisfies NextAuthConfig
-
-export class InvalidCredentials extends AuthError {
-	public readonly kind = "signIn"
-
-	constructor(message: string) {
-		super("Invalid credentials")
-		this.message = message
-		this.type = "CredentialsSignin"
-	}
-}
-
-export class CustomError extends CredentialsSignin {
-	constructor(code: string) {
-		super()
-		this.code = code
-		this.message = code
-		this.stack = undefined
-	}
 }
 

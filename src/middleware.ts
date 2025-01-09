@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import NextAuth from "next-auth"
-import authConfig from "../auth.config"
+import { authConfig } from "../auth.config";
 
 // Use only one of the two middleware options below
 // 1. Use middleware directly
@@ -30,7 +30,7 @@ export default auth(async function middleware(req: NextRequest) {
     // --------
 	// Your custom middleware logic goes here
 	// console.log(req.auth, "middleware - auth")
-    NextResponse.next()
+    return NextResponse.next()
 })
 
 // Optionally, don't invoke Middleware on some paths
